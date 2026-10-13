@@ -8,3 +8,7 @@ log.html
 report.html
 snapshots/
 logs/
+firmware/.cproject
+firmware/.project
+firmware.settings/language.settings.xml
+firmware.settings/org.eclipse.cdt.core.prefs
