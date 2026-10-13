@@ -17,7 +17,7 @@ LDFLAGS := $(CPU) -nostartfiles -T src/startup/stm32f767.ld -Wl,--gc-sections
 TARGET  := hawkhealth.elf
 
 # Every .c under src/ (your stubs, the platform layer, startup, hooks, app wiring).
-APP_SRC    := $(shell find src -name '*.c')
+APP_SRC    := $(wildcard src/*.c src/*/*.c)
 KERNEL_SRC := $(KERNEL)/tasks.c $(KERNEL)/list.c $(KERNEL)/queue.c \
               $(PORT)/port.c $(KERNEL)/portable/MemMang/heap_4.c
 SRC        := $(APP_SRC) $(KERNEL_SRC)
