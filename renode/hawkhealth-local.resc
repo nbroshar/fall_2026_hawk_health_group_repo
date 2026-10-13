@@ -1,0 +1,18 @@
+:name: HawkHealth Group (STM32F767) — local dev
+:description: Watch your group build's output on USART3, using your locally built firmware.
+#
+# ZERO EDITS NEEDED — launch Renode FROM YOUR CLONE ROOT (the folder with firmware/ platforms/):
+#     cd <your-clone>
+#     renode renode/hawkhealth-local.resc
+# then at the (hawkhealth) monitor prompt:  start
+#
+# Rebuilt the firmware?  At the prompt:
+#     Reset
+#     sysbus LoadELF @firmware/hawkhealth.elf
+#     start
+#
+using sysbus
+mach create "hawkhealth"
+machine LoadPlatformDescription @platforms/hawkhealth_f767.repl
+sysbus LoadELF @firmware/hawkhealth.elf
+showAnalyzer sysbus.usart3

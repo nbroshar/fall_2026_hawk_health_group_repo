@@ -1,0 +1,15 @@
+:name: HawkHealth Group (STM32F767)
+:description: Run the group build in Renode and watch its output on USART3.
+#
+# Use this one if you launch Renode from somewhere other than your clone root.
+# EDIT the two absolute paths for YOUR machine (forward slashes, no quotes):
+#   1) the platform file in your clone:  <clone>/platforms/hawkhealth_f767.repl
+#   2) the firmware you built or downloaded:  <path>/hawkhealth.elf
+#
+using sysbus
+mach create "hawkhealth"
+machine LoadPlatformDescription @C:/Users/you/CENG4200/fall_2026_hawk_health_group_repo/platforms/hawkhealth_f767.repl
+sysbus LoadELF @C:/Users/you/CENG4200/fall_2026_hawk_health_group_repo/firmware/hawkhealth.elf
+showAnalyzer sysbus.usart3
+#
+# then, at the (hawkhealth) monitor prompt:  start
