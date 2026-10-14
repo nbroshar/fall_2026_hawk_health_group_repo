@@ -9,7 +9,7 @@
 #define TELEMETRY_H
 
 //include Alert header for use in telemetry
-#include "TheHead.h"
+#include "hh_alert.h"
 
 
 typedef struct {
