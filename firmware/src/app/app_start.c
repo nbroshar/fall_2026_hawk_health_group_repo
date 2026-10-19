@@ -25,6 +25,7 @@ void app_start(void){
     hh_platform_init();
     hh_println("[HawkHealth] group skeleton starting");
 	/* Remove Skeleton task after tasks incorporated*/
+	/* Everyone needs to give the Integrator their xTaskCreate line*/
     xTaskCreate(SkeletonTask, "skel", 256, NULL, 2, NULL);
     /* Everyone needs to give the Integrator their xTaskCreate line*/
 }
