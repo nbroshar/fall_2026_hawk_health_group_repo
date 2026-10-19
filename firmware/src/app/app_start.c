@@ -23,5 +23,6 @@ static void SkeletonTask(void *pv){
 void app_start(void){
     hh_platform_init();
     hh_println("[HawkHealth] group skeleton starting");
+	/* Everyone needs to give the Integrator their xTaskCreate line*/
     xTaskCreate(SkeletonTask, "skel", 256, NULL, 2, NULL);
 }
