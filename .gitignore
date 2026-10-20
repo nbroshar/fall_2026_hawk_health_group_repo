@@ -18,3 +18,4 @@ firmware.settings/org.eclipse.cdt.core.prefs
 .settings/
 firmware/*.elf
 firmware\.cproject
+firmware/hawkhealth.elf
