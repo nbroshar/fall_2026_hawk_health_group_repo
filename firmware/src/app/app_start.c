@@ -9,6 +9,7 @@
 
 #include "FreeRTOS.h"
 #include "task.h"
+/*Nat was here*/
 #include "hh_platform.h"
 #include "queue.h"
 #include "hh_alert.h"
@@ -29,6 +30,8 @@ static void SkeletonTask(void *pv){
 void app_start(void){
     hh_platform_init();
     hh_println("[HawkHealth] group skeleton starting");
+	/* Remove Skeleton task after tasks incorporated*/
+	/* Everyone needs to give the Integrator their xTaskCreate line*/
     xTaskCreate(SkeletonTask, "skel", 256, NULL, 2, NULL);
 
     alertOutputQueue = xQueueCreate(1, sizeof(AlertStatus_t));
@@ -42,4 +45,5 @@ void app_start(void){
                     alertOutputQueue, 2, NULL) != pdPASS) {
         hh_println("[ALERT] task creation failed");
     }
+    /* Everyone needs to give the Integrator their xTaskCreate line*/
 }
