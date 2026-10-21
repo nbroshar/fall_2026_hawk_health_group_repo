@@ -4,10 +4,17 @@
  * and one task streams a line every 250 ms. That is the green baseline you build on.
  *
  */
+
+
+
 #include "FreeRTOS.h"
 #include "hh_sensor_contract.h"
 /*Nat was here*/
 #include "hh_platform.h"
+#include "queue.h"
+#include "hh_alert.h"
+
+static QueueHandle_t alertOutputQueue = NULL;
 
 static void SkeletonTask(void *pv){
     (void)pv;
