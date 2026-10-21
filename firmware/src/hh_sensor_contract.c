@@ -1,4 +1,5 @@
 #include "hh_sensor_contract.h"
+#include "task.h"
 
 #define SENSOR_PERIOD_MS 250   /* 4 Hz (RT1) */
 
