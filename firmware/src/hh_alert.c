@@ -8,14 +8,10 @@ static const AlertStatus_t samples[] = {
     {36.8f, ALERT_NONE, 98.0f, ALERT_NONE, 75, ALERT_NONE},
     {35.5f, ALERT_LOW, 93.0f, ALERT_LOW, 55, ALERT_LOW},
     {38.5f, ALERT_HIGH, 98.0f, ALERT_NONE, 115, ALERT_HIGH},
-    {33.0f, ALERT_CRITICAL_LOW, 85.0f, ALERT_CRITICAL_LOW,
-     35, ALERT_CRITICAL_LOW},
-    {41.0f, ALERT_CRITICAL_HIGH, 98.0f, ALERT_NONE,
-     180, ALERT_CRITICAL_HIGH},
-    {250.0f, ALERT_CRITICAL_HIGH, 0.0f, ALERT_CRITICAL_LOW,
-     0, ALERT_CRITICAL_LOW},
-    {36.8f, ALERT_NONE, 150.0f, ALERT_CRITICAL_HIGH,
-     999, ALERT_CRITICAL_HIGH}
+    {33.0f, ALERT_CRITICAL_LOW, 85.0f, ALERT_CRITICAL_LOW, 35, ALERT_CRITICAL_LOW},
+    {41.0f, ALERT_CRITICAL_HIGH, 98.0f, ALERT_NONE, 180, ALERT_CRITICAL_HIGH},
+    {109.3f, ALERT_CRITICAL_HIGH, 56.1f, ALERT_CRITICAL_LOW, 35, ALERT_CRITICAL_LOW},
+    {36.8f, ALERT_NONE, 110.0f, ALERT_CRITICAL_HIGH, 200, ALERT_CRITICAL_HIGH}
 };
 
 static const char *level_name(AlertLevel_t level)
@@ -71,7 +67,7 @@ void AlertTask(void *pv)
             hh_print(level_name(status.hrAlert));
 
             if (index >= 5) {
-                hh_print(" | BOGUS TEST DATA");
+                hh_print(" | Clear Outlier");
             }
 
             hh_println("");
