@@ -1,7 +1,11 @@
-#include "hh_sensor_contract.h"
+#include "FreeRTOS.h"
+#include "queue.h"      
 #include "task.h"
+#include "hh_sensor_contract.h"
 
 #define SENSOR_PERIOD_MS 250   /* 4 Hz (RT1) */
+
+QueueHandle_t sensorQueue;
 
 /* Fake readings: temp, spo2, hr */
 static const float kTemp[] = { 36.8f, 36.9f, 38.5f, 40.2f, 36.8f };
@@ -11,7 +15,7 @@ static const uint16_t kHr[] = {   72,    75,   115,   150,   300 };  /* 300 = ba
 
 QueueHandle_t sensorQueue;
 
-static void SensorTask(void *arg)
+void SensorTask(void *arg)
 {
     (void)arg;
     TickType_t lastWake = xTaskGetTickCount();
