@@ -2,7 +2,11 @@
 #ifndef SENSOR_CONTRACT_H
 #define SENSOR_CONTRACT_H
 
+#include "FreeRTOS.h"
+#include "queue.h"
 #include <stdint.h>
+
+extern QueueHandle_t sensorQueue;
 
 typedef struct {
     uint32_t seq;        // sample number: 1, 2, 3, ...
@@ -11,6 +15,8 @@ typedef struct {
     float    spo2_pct;   // blood-oxygen saturation, 98.0 = 98% SpO2
     uint16_t hr_bpm;     // heart rate, beats/min
 } SensorSample_t;
+
+void SensorTask(void *arg);
 
 #endif
 
