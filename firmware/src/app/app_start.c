@@ -15,6 +15,7 @@
 static QueueHandle_t alertOutputQueue = NULL;
 /* JAL: Alert interface and output queue handle. Keep for AlertTask startup. */
 
+void HH_Watchdog_Stub_Task(void *pv);   //DECLARATION: tells the compiler this function exists in another file; must appear B4 the first line using 'HH_Watchdog_Stub_task'
 
 static void SkeletonTask(void *pv){
     (void)pv;
@@ -49,5 +50,6 @@ void app_start(void){
 
   sensorQueue = xQueueCreate(16, sizeof(SensorSample_t));
   xTaskCreate(SensorTask, "Sensor", 256, NULL, 3, NULL);
-  vTaskStartScheduler();
+  xTaskCreate(HH_Watchdog_Stub_Task, "watchdog", 256, NULL, 2, NULL);   //REGISTRATION: registers the task with the scheduler
+  vTaskStartScheduler();//Starts FreeRTOS and never returns, so any xTaskCreate written AFTER it never returns, and those tasks would never exist.
 }
