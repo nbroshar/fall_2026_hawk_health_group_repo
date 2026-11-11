@@ -9,6 +9,7 @@
 #include "task.h"
 #include "queue.h"
 #include "hh_platform.h"
+#include "hh_display.h"
 
 /* JAL: Alert interface and output queue handle. Keep for AlertTask startup. */
 #include "hh_alert.h"
@@ -49,5 +50,6 @@ void app_start(void){
 
   sensorQueue = xQueueCreate(16, sizeof(SensorSample_t));
   xTaskCreate(SensorTask, "Sensor", 256, NULL, 3, NULL);
+  xTaskCreate(DisplayTask, "Display", 256, NULL, 1, NULL);
   vTaskStartScheduler();
 }
