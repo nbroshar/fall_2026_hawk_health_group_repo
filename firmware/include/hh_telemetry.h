@@ -17,6 +17,13 @@ typedef struct {
     AlertStatus_t alertStatus; //filter data and its alerts
 } TelemetryData_t;
 
+/* Formatted message for the Display subsystem */
+#define TELEMETRY_MESSAGE_SIZE 256
+
+typedef struct {
+    char text[TELEMETRY_MESSAGE_SIZE];
+} TelemetryMessage_t;
+
 void TelemetryTask(void *pv); // task to take in data, and arrange it into a string for display and log
 
 #endif /* TELEMETRY_H */
