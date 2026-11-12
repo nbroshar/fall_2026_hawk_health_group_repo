@@ -11,6 +11,12 @@
 //include Alert header for use in telemetry
 #include "hh_alert.h"
 
+/* Formatted Telemetry message for Display and Logger */
+#define TELEMETRY_MESSAGE_SIZE 256
+
+typedef struct {
+    char text[TELEMETRY_MESSAGE_SIZE];
+} TelemetryMessage_t;
 
 typedef struct {
     uint32_t time_ms; //time to be logged for data
