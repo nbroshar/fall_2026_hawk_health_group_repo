@@ -10,6 +10,7 @@
 #include "queue.h"
 #include "hh_platform.h"
 #include "hh_display.h"
+#include "hh_logger.h"
 
 /* JAL: Alert interface and output queue handle. Keep for AlertTask startup. */
 #include "hh_alert.h"
@@ -47,6 +48,12 @@ void app_start(void){
         hh_println("[ALERT] task creation failed");
     }
     /* JAL: creates the Alert queue and starts AlertTask. Keep for Alert output. */
+
+    /* Start Logger subsystem */
+    if (xTaskCreate(LoggerTask, "Logger", 512,
+                    NULL, 2, NULL) != pdPASS) {
+        hh_println("[LOGGER] Task creation failed");
+    }
 
   sensorQueue = xQueueCreate(16, sizeof(SensorSample_t));
   xTaskCreate(SensorTask, "Sensor", 256, NULL, 3, NULL);

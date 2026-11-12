@@ -8,7 +8,7 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
-#include "telemetry.h" //include telemetry so it can receive data from telemetry.c
+#include "hh_telemetry.h" //include telemetry so it can receive data from telemetry.c
 
 void LoggerTask(void *pv);// store data in log
 void LoggerClear(void); //clear log function
