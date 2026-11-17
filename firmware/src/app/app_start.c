@@ -10,6 +10,7 @@
 #include "queue.h"
 #include "hh_platform.h"
 #include "hh_display.h"
+#include "hh_filter.h"
 
 /* JAL: Alert interface and output queue handle. Keep for AlertTask startup. */
 #include "hh_alert.h"
@@ -49,9 +50,26 @@ void app_start(void){
     }
     /* JAL: creates the Alert queue and starts AlertTask. Keep for Alert output. */
 
+
+    /* VY: Create the filter startup */
+    sensorQueue = xQueueCreate(16, sizeof(SensorSample_t));
+
+    if (sensorQueue == NULL) {
+        hh_println("[SENSOR] queue creation failed");
+    } else if (xTaskCreate(SensorTask, "Sensor", 256, NULL, 3, NULL) != pdPASS) {
+        hh_println("[SENSOR] task creation failed");
+    } else if (!Filter_Init()) {
+        hh_println("[FILTER] filteredQueue creation failed");
+    } else if (xTaskCreate(FilterTask, "Filter", 256, NULL, 2, NULL) != pdPASS) {
+        hh_println("[FILTER] task creation failed");
+    }
+
+  xTaskCreate(DisplayTask, "Display", 256, NULL, 1, NULL);
+
   sensorQueue = xQueueCreate(16, sizeof(SensorSample_t));
   xTaskCreate(SensorTask, "Sensor", 256, NULL, 3, NULL);
   xTaskCreate(HH_Watchdog_Stub_Task, "watchdog", 256, NULL, 2, NULL);   //REGISTRATION: registers the task with the scheduler
   xTaskCreate(DisplayTask, "Display", 256, NULL, 1, NULL);
  vTaskStartScheduler();//Starts FreeRTOS and never returns, so any xTaskCreate written AFTER it never returns, and those tasks would never exist.
+
 }
