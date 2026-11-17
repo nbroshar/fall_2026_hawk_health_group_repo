@@ -92,7 +92,7 @@ typedef struct {
 } Watchdog_ChannelConfig_t;
 
 /** Health of one channel, as reported by Watchdog_GetChannelStatus(). */
-typedef enum {
+typedef enum {				  /*enum: one value, chosen from a list of names, unlike a 'struct' that's like a form w/several blanks*/
     WATCHDOG_CH_UNUSED = 0,   /* not registered (or deregistered / bad handle) */
     WATCHDOG_CH_OK,           /* kicking on time                               */
     WATCHDOG_CH_TIMED_OUT     /* missed its timeout_ms                         */
