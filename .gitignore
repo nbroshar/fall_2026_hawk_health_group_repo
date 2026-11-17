@@ -32,5 +32,4 @@ firmware/.project
 .cproject
 .project
 firmware/include/hh_telemetry.h
-firmware/include/hh_telemetry.h
 *.h
