@@ -29,4 +29,7 @@ Thumbs.db
 firmware/.cproject
 firmware/.project
 
+.cproject
 .project
+firmware/include/hh_telemetry.h
+*.h
