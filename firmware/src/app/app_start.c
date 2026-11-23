@@ -19,6 +19,9 @@ static QueueHandle_t alertOutputQueue = NULL;
 
 void HH_Watchdog_Stub_Task(void *pv);   //DECLARATION: tells the compiler this function exists in another file; must appear B4 the first line using 'HH_Watchdog_Stub_task'
 
+#include "hh_telemetry.h"
+
+
 static void SkeletonTask(void *pv){
     (void)pv;
     uint32_t seq = 0;
@@ -27,6 +30,23 @@ static void SkeletonTask(void *pv){
         hh_print_u32(seq++);
         hh_println("");
         vTaskDelay(pdMS_TO_TICKS(250));
+    }
+}
+
+
+/* Temporary Display task to test Telemetry output queue */
+static void TestDisplayTask(void *pv)
+{
+    QueueHandle_t queue = (QueueHandle_t)pv;
+    TelemetryMessage_t received;
+
+    for (;;)
+    {
+        if (xQueueReceive(queue, &received, portMAX_DELAY) == pdPASS)
+        {
+            hh_println("[DISPLAY TEST] Received from Telemetry:");
+            hh_println(received.text);
+        }
     }
 }
 
@@ -42,6 +62,8 @@ void app_start(void){
     /* JAL: creates the Alert queue and starts AlertTask. Keep for Alert output. */
     alertOutputQueue = xQueueCreate(1, sizeof(AlertStatus_t));
 
+    static QueueHandle_t telemetryOutputQueue = NULL;
+
     if (alertOutputQueue == NULL) {
         hh_println("[ALERT] queue creation failed");
     } else if (xTaskCreate(AlertTask, "alert", 512,
@@ -49,6 +71,23 @@ void app_start(void){
         hh_println("[ALERT] task creation failed");
     }
     /* JAL: creates the Alert queue and starts AlertTask. Keep for Alert output. */
+    /* Create Telemetry output queue */
+    telemetryOutputQueue = xQueueCreate(4, sizeof(TelemetryMessage_t));
+
+    if (telemetryOutputQueue == NULL) {
+        hh_println("[TELEMETRY] Queue creation failed");
+    }
+    else if (xTaskCreate(TelemetryTask, "Telemetry", 512,
+                         telemetryOutputQueue, 2, NULL) != pdPASS) {
+        hh_println("[TELEMETRY] Task creation failed");
+    }
+    /* Temporary receiver to verify Telemetry queue */
+    if (telemetryOutputQueue != NULL) {
+        if (xTaskCreate(TestDisplayTask, "DisplayTest", 768,
+                        telemetryOutputQueue, 2, NULL) != pdPASS) {
+            hh_println("[DISPLAY TEST] Task creation failed");
+        }
+    }
 
     /* Start Logger subsystem */
     if (xTaskCreate(LoggerTask, "Logger", 512,
