@@ -9,12 +9,15 @@
 #include "task.h"
 #include "queue.h"
 #include "hh_platform.h"
+#include "hh_display.h"
+#include "hh_logger.h"
 
 /* JAL: Alert interface and output queue handle. Keep for AlertTask startup. */
 #include "hh_alert.h"
 static QueueHandle_t alertOutputQueue = NULL;
 /* JAL: Alert interface and output queue handle. Keep for AlertTask startup. */
 
+void HH_Watchdog_Stub_Task(void *pv);   //DECLARATION: tells the compiler this function exists in another file; must appear B4 the first line using 'HH_Watchdog_Stub_task'
 
 #include "hh_telemetry.h"
 
@@ -86,7 +89,15 @@ void app_start(void){
         }
     }
 
+    /* Start Logger subsystem */
+    if (xTaskCreate(LoggerTask, "Logger", 512,
+                    NULL, 2, NULL) != pdPASS) {
+        hh_println("[LOGGER] Task creation failed");
+    }
+
   sensorQueue = xQueueCreate(16, sizeof(SensorSample_t));
   xTaskCreate(SensorTask, "Sensor", 256, NULL, 3, NULL);
-  vTaskStartScheduler();
+  xTaskCreate(HH_Watchdog_Stub_Task, "watchdog", 256, NULL, 2, NULL);   //REGISTRATION: registers the task with the scheduler
+  xTaskCreate(DisplayTask, "Display", 256, NULL, 1, NULL);
+ vTaskStartScheduler();//Starts FreeRTOS and never returns, so any xTaskCreate written AFTER it never returns, and those tasks would never exist.
 }
