@@ -10,6 +10,8 @@
 #include "queue.h"
 #include "hh_platform.h"
 #include "hh_display.h"
+#include "hh_filter.h"
+#include "hh_logger.h"
 
 /* JAL: Alert interface and output queue handle. Keep for AlertTask startup. */
 #include "hh_alert.h"
@@ -93,4 +95,5 @@ void app_start(void){
   xTaskCreate(HH_Watchdog_Stub_Task, "watchdog", 256, NULL, 2, NULL);   //REGISTRATION: registers the task with the scheduler
   xTaskCreate(DisplayTask, "Display", 256, NULL, 1, NULL);
  vTaskStartScheduler();//Starts FreeRTOS and never returns, so any xTaskCreate written AFTER it never returns, and those tasks would never exist.
+
 }
