@@ -10,6 +10,8 @@
 #include "queue.h"
 #include "hh_platform.h"
 #include "hh_display.h"
+#include "hh_filter.h"
+#include "hh_logger.h"
 
 /* JAL: Alert interface and output queue handle. Keep for AlertTask startup. */
 #include "hh_alert.h"
@@ -17,6 +19,9 @@ static QueueHandle_t alertQueue = NULL;
 /* JAL: Alert interface and output queue handle. Keep for AlertTask startup. */
 
 void HH_Watchdog_Stub_Task(void *pv);   //DECLARATION: tells the compiler this function exists in another file; must appear B4 the first line using 'HH_Watchdog_Stub_task'
+
+#include "hh_telemetry.h"
+
 
 static void SkeletonTask(void *pv){
     (void)pv;
@@ -30,6 +35,23 @@ static void SkeletonTask(void *pv){
 }
 
 
+/* Temporary Display task to test Telemetry output queue */
+static void TestDisplayTask(void *pv)
+{
+    QueueHandle_t queue = (QueueHandle_t)pv;
+    TelemetryMessage_t received;
+
+    for (;;)
+    {
+        if (xQueueReceive(queue, &received, portMAX_DELAY) == pdPASS)
+        {
+            hh_println("[DISPLAY TEST] Received from Telemetry:");
+            hh_println(received.text);
+        }
+    }
+}
+
+
 void app_start(void){
 
     hh_platform_init();
@@ -39,13 +61,66 @@ void app_start(void){
     xTaskCreate(SkeletonTask, "skel", 256, NULL, 2, NULL);
 
     /* JAL: creates the Alert queue and starts AlertTask. Keep for Alert output. */
+
     alertQueue = xQueueCreate(1, sizeof(AlertStatus_t));
     xTaskCreate(AlertTask, "Alert", 512, alertQueue, 2, NULL);
-    /* JAL: creates the Alert queue and starts AlertTask. Keep for Alert output. */
 
+    alertOutputQueue = xQueueCreate(1, sizeof(AlertStatus_t));
+
+    static QueueHandle_t telemetryOutputQueue = NULL;
+
+    if (alertOutputQueue == NULL) {
+        hh_println("[ALERT] queue creation failed");
+    } else if (xTaskCreate(AlertTask, "alert", 512,
+                           alertOutputQueue, 2, NULL) != pdPASS) {
+        hh_println("[ALERT] task creation failed");
+    }
+
+    /* JAL: creates the Alert queue and starts AlertTask. Keep for Alert output. */
+    /* Create Telemetry output queue */
+    telemetryOutputQueue = xQueueCreate(4, sizeof(TelemetryMessage_t));
+
+    if (telemetryOutputQueue == NULL) {
+        hh_println("[TELEMETRY] Queue creation failed");
+    }
+    else if (xTaskCreate(TelemetryTask, "Telemetry", 512,
+                         telemetryOutputQueue, 2, NULL) != pdPASS) {
+        hh_println("[TELEMETRY] Task creation failed");
+    }
+    /* Temporary receiver to verify Telemetry queue */
+    if (telemetryOutputQueue != NULL) {
+        if (xTaskCreate(TestDisplayTask, "DisplayTest", 768,
+                        telemetryOutputQueue, 2, NULL) != pdPASS) {
+            hh_println("[DISPLAY TEST] Task creation failed");
+        }
+    }
+
+
+    /* VY: Create the filter startup */
     sensorQueue = xQueueCreate(16, sizeof(SensorSample_t));
-    xTaskCreate(SensorTask, "Sensor", 256, NULL, 3, NULL);
-    xTaskCreate(HH_Watchdog_Stub_Task, "watchdog", 256, NULL, 2, NULL);   //REGISTRATION: registers the task with the scheduler
-    xTaskCreate(DisplayTask, "Display", 256, NULL, 1, NULL);
-    vTaskStartScheduler();//Starts FreeRTOS and never returns, so any xTaskCreate written AFTER it never returns, and those tasks would never exist.
+
+    if (sensorQueue == NULL) {
+        hh_println("[SENSOR] queue creation failed");
+    } else if (xTaskCreate(SensorTask, "Sensor", 256, NULL, 3, NULL) != pdPASS) {
+        hh_println("[SENSOR] task creation failed");
+    } else if (!Filter_Init()) {
+        hh_println("[FILTER] filteredQueue creation failed");
+    } else if (xTaskCreate(FilterTask, "Filter", 256, NULL, 2, NULL) != pdPASS) {
+        hh_println("[FILTER] task creation failed");
+    }
+
+  xTaskCreate(DisplayTask, "Display", 256, NULL, 1, NULL);
+
+    /* Start Logger subsystem */
+    if (xTaskCreate(LoggerTask, "Logger", 512,
+                    NULL, 2, NULL) != pdPASS) {
+        hh_println("[LOGGER] Task creation failed");
+    }
+
+  sensorQueue = xQueueCreate(16, sizeof(SensorSample_t));
+  xTaskCreate(SensorTask, "Sensor", 256, NULL, 3, NULL);
+  xTaskCreate(HH_Watchdog_Stub_Task, "watchdog", 256, NULL, 2, NULL);   //REGISTRATION: registers the task with the scheduler
+  xTaskCreate(DisplayTask, "Display", 256, NULL, 1, NULL);
+ vTaskStartScheduler();//Starts FreeRTOS and never returns, so any xTaskCreate written AFTER it never returns, and those tasks would never exist.
+
 }
