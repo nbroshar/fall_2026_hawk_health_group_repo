@@ -116,6 +116,6 @@ void app_start(void){
   xTaskCreate(SensorTask, "Sensor", 256, NULL, 3, NULL);
   xTaskCreate(HH_Watchdog_Stub_Task, "watchdog", 256, NULL, 2, NULL);   //REGISTRATION: registers the task with the scheduler
   xTaskCreate(DisplayTask, "Display", 256, NULL, 1, NULL);
- vTaskStartScheduler();//Starts FreeRTOS and never returns, so any xTaskCreate written AFTER it never returns, and those tasks would never exist.
+  vTaskStartScheduler();//Starts FreeRTOS and never returns, so any xTaskCreate written AFTER it never returns, and those tasks would never exist.
 
 }
